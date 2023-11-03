@@ -1,6 +1,5 @@
-// const articles = require('./data/articles.json')
-// const users = require('./data/users.json')
-const {writeIntoFile,middlewareArticleWrapper,fetchSingleArticle,middlewareWrapper,readFileMiddleware,updateMiddleware,updateCommentMiddleware} = require('./middlewares/fileReadWrite')
+
+const {writeIntoFile,middlewareArticleWrapper,fetchSingleArticle,middlewareWrapper,readFileMiddleware,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
 const {readJSONFile} = require('./utils/fileReadWrite')
 const express = require('express')
 const app = express()
@@ -22,7 +21,6 @@ app.get('/api/getAll/:fileName',readFileMiddleware,(req,res)=>{
     else{
         res.status(200).json(res.locals.result)
     }
-    
 })
 
 // get all comments of an article
@@ -57,13 +55,22 @@ app.put('/api/:fileName/:id',readFileMiddleware,updateMiddleware,(req, res) => {
     res.status(400).json(res.locals.result)
 })
 //create comment
-app.put('/api/article/:articleId/comment',readFileMiddleware,updateCommentMiddleware,(req, res) => {
+app.put('/api/:fileName/:articleId/comment',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
+    res.status(400).json(res.locals.result)
+})
+// update comments
+app.put('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
     res.status(400).json(res.locals.result)
 })
 
-
-
 //DELETE API
+app.delete('/api/:fileName/:id',readFileMiddleware,deleteMiddleware,writeIntoFile,(req, res) => {
+    res.status(400).json(res.locals.result)
+})
+
+app.delete('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,deleteCommentMiddleware,writeIntoFile,(req, res) => {
+    res.status(400).json(res.locals.result)
+})
 
 
 app.listen(5000,()=>{

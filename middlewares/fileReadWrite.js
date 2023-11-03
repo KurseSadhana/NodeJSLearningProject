@@ -40,10 +40,46 @@ const updateMiddleware = (req,res,next)=>{
     res.locals.writeFile = req.params.fileName
     next()
 }
-
-const updateCommentMiddleware = (req,res,next)=>{
+const deleteMiddleware = (req,res,next)=>{
+    let tempIndex = res.locals.result.findIndex(el=>el.id === Number(req.params.id))
+    res.locals.result.splice(tempIndex,1)
+    res.locals.writeData = res.locals.result
+    res.locals.writeFile = req.params.fileName
+    next()
+}
+const addCommentMiddleware = (req,res,next)=>{
     let tempIndex = res.locals.result.findIndex(el=>el.id == Number(req.params.articleId))
-    res.locals.result[tempIndex].comments.push(req.body)
+
+    if(req.params.commentId){
+        let tempComment =  res.locals.result[tempIndex].comments.findIndex(el=>el.id === Number(req.params.commentId))
+        let newObj = {
+            ...res.locals.result[tempIndex].comments[tempComment],
+            ...req.body
+        }
+        res.locals.result[tempIndex].comments[tempComment] = newObj
+
+    }
+    else{
+        let newObj = {
+            id:res.locals.result[tempIndex].comments.length,
+            ...req.body
+        }
+        res.locals.result[tempIndex].comments.push(newObj)
+    }
+    
+    res.locals.writeData = res.locals.result
+    res.locals.writeFile = "articles"
+    next()
+}
+
+const deleteCommentMiddleware = (req,res,next)=>{
+    let tempIndex = res.locals.result.findIndex(el=>el.id == Number(req.params.articleId))
+
+    let tempComment =  res.locals.result[tempIndex].comments.findIndex(el=>el.id === Number(req.params.commentId))
+    res.locals.result[tempIndex].comments.splice(tempComment,1)
+    console.log(res.locals.result[tempIndex])
+   
+    
     res.locals.writeData = res.locals.result
     res.locals.writeFile = "articles"
     next()
@@ -78,7 +114,9 @@ const middlewareArticleWrapper = (fileName)=>{
             "author":author,
             "publishedDate":new Date().getFullYear(),
             "content":content,
-            "title":title
+            "title":title,
+            "comments":[]
+
         })
         res.locals.writeData = array
         res.locals.writeFile = fileName
@@ -101,4 +139,4 @@ const middlewareWrapper = (fileName)=>{
 
 
 
-module.exports = {writeIntoFile,middlewareWrapper,middlewareArticleWrapper,readFileMiddleware,fetchSingleArticle,updateMiddleware,updateCommentMiddleware}
+module.exports = {writeIntoFile,middlewareWrapper,middlewareArticleWrapper,readFileMiddleware,fetchSingleArticle,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware}
