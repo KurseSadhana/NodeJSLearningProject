@@ -1,10 +1,15 @@
 
-const {writeIntoFile,middlewareArticleWrapper,fetchSingleArticle,middlewareWrapper,readFileMiddleware,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
+const {writeIntoFile,middlewareArticleWrapper,middlewareWrapper,readFileMiddleware,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
 const {readJSONFile} = require('./utils/fileReadWrite')
 const express = require('express')
 const app = express()
+const articles = require('./routers/articles')
+// const fileName = require('./routers/filename')
+
 app.use(express.urlencoded({extended:false}));
 
+app.use('/api/article',articles)
+// app.use('/api/:fileName',fileName)
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome")
@@ -23,15 +28,7 @@ app.get('/api/getAll/:fileName',readFileMiddleware,(req,res)=>{
     }
 })
 
-// get all comments of an article
-app.get('/api/article/:articleId/comments',fetchSingleArticle,(req,res)=>{
-    res.status(200).json(res.locals.result.comments)
-})
 
-// Fetch one article
-app.get('/api/article/:articleId',fetchSingleArticle,(req,res)=>{
-    res.status(200).json(res.locals.result)
-})
 
 app.get('/api/user/:userId',async(req,res)=>{
     let users = await readJSONFile('users')
@@ -54,22 +51,24 @@ app.post('/api/users', readFileMiddleware,middlewareWrapper("users"),writeIntoFi
 app.put('/api/:fileName/:id',readFileMiddleware,updateMiddleware,(req, res) => {
     res.status(400).json(res.locals.result)
 })
+
+
 //create comment
 app.put('/api/:fileName/:articleId/comment',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(400).json(res.locals.result)
+    res.status(200).json(res.locals.result)
 })
 // update comments
 app.put('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(400).json(res.locals.result)
+    res.status(200).json(res.locals.result)
 })
 
 //DELETE API
 app.delete('/api/:fileName/:id',readFileMiddleware,deleteMiddleware,writeIntoFile,(req, res) => {
-    res.status(400).json(res.locals.result)
+    res.status(200).json(res.locals.result)
 })
 
 app.delete('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,deleteCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(400).json(res.locals.result)
+    res.status(200).json(res.locals.result)
 })
 
 
