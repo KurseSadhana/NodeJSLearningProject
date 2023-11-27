@@ -2,6 +2,19 @@ const { readFile, writeFile } = require('fs')
 const {readJSONFile} = require('../utils/fileReadWrite')
 
 
+const readArticlesMiddleware = (req,res,next)=>{
+    try{
+       const file = readJSONFile('articles')
+       file.then((data)=>{
+        res.locals.result = data
+        next()
+       })
+    }
+    catch(err){
+        res.status(200).send("No such file/directory")
+    } 
+}
+
 const readFileMiddleware = (req,res,next)=>{
     try{
        const file = readJSONFile(req.params.fileName)
@@ -21,6 +34,7 @@ const fetchSingleArticle = (req,res,next)=>{
        const file = readJSONFile("articles")
        file.then((data)=>{
         res.locals.result = data.find(d=>d.id === Number(req.params.articleId))
+        console.log(res.locals)
         next()
        })
     }
@@ -139,4 +153,4 @@ const middlewareWrapper = (fileName)=>{
 
 
 
-module.exports = {writeIntoFile,middlewareWrapper,middlewareArticleWrapper,readFileMiddleware,fetchSingleArticle,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware}
+module.exports = {writeIntoFile,middlewareWrapper,middlewareArticleWrapper,readFileMiddleware,readArticlesMiddleware,fetchSingleArticle,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware}

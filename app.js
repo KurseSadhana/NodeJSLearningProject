@@ -1,15 +1,13 @@
 
-const {writeIntoFile,middlewareArticleWrapper,middlewareWrapper,readFileMiddleware,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
+const {writeIntoFile,middlewareArticleWrapper,middlewareWrapper,readArticlesMiddleware,readFileMiddleware,fetchSingleArticle,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
 const {readJSONFile} = require('./utils/fileReadWrite')
 const express = require('express')
 const app = express()
 const articles = require('./routers/articles')
-// const fileName = require('./routers/filename')
 
 app.use(express.urlencoded({extended:false}));
 
-app.use('/api/article',articles)
-// app.use('/api/:fileName',fileName)
+app.use('/api/articles',articles)
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome")
