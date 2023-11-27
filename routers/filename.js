@@ -1,8 +1,15 @@
 const express = require('express')
-const {readFileMiddleware,updateMiddleware} = require('../middlewares/fileReadWrite')
+const {readFileMiddleware,updateMiddleware,deleteMiddleware,writeIntoFile} = require('../middlewares/fileReadWrite')
 const router = express.Router()
 
-router.put('/:id',readFileMiddleware,updateMiddleware,(req, res) => {
+
+// update API 
+router.put('/:fileName/:id',readFileMiddleware,updateMiddleware,(req, res) => {
+    res.status(200).json(res.locals.result)
+})
+
+//DELETE API
+router.delete('/:fileName/:id',readFileMiddleware,deleteMiddleware,writeIntoFile,(req, res) => {
     res.status(200).json(res.locals.result)
 })
 

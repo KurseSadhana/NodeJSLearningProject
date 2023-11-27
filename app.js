@@ -4,10 +4,12 @@ const {readJSONFile} = require('./utils/fileReadWrite')
 const express = require('express')
 const app = express()
 const articles = require('./routers/articles')
+const fileName = require('./routers/filename')
 
 app.use(express.urlencoded({extended:false}));
 
 app.use('/api/articles',articles)
+app.use('/api',fileName)
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome")
@@ -44,13 +46,6 @@ app.post('/api/users', readFileMiddleware,middlewareWrapper("users"),writeIntoFi
     res.send("created user successfuly")
 })
 
-
-//UPDATE API
-app.put('/api/:fileName/:id',readFileMiddleware,updateMiddleware,(req, res) => {
-    res.status(400).json(res.locals.result)
-})
-
-
 //create comment
 app.put('/api/:fileName/:articleId/comment',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
     res.status(200).json(res.locals.result)
@@ -60,10 +55,7 @@ app.put('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,addCo
     res.status(200).json(res.locals.result)
 })
 
-//DELETE API
-app.delete('/api/:fileName/:id',readFileMiddleware,deleteMiddleware,writeIntoFile,(req, res) => {
-    res.status(200).json(res.locals.result)
-})
+
 
 app.delete('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,deleteCommentMiddleware,writeIntoFile,(req, res) => {
     res.status(200).json(res.locals.result)
