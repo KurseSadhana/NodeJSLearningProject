@@ -1,65 +1,20 @@
 
-const {writeIntoFile,middlewareArticleWrapper,middlewareWrapper,readArticlesMiddleware,readFileMiddleware,fetchSingleArticle,updateMiddleware,addCommentMiddleware,deleteCommentMiddleware,deleteMiddleware} = require('./middlewares/fileReadWrite')
-const {readJSONFile} = require('./utils/fileReadWrite')
 const express = require('express')
 const app = express()
-const articles = require('./routers/articles')
-const fileName = require('./routers/filename')
-
+const articleRoute = require('./routers/articles')
+const userRoute = require('./routers/users')
+const commentsRoute = require('./routers/comments')
 app.use(express.urlencoded({extended:false}));
 
-app.use('/api/articles',articles)
-app.use('/api',fileName)
+app.use(userRoute)
+app.use(articleRoute)
+
+app.use(commentsRoute)
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome")
 })
 
-//GET API'S  
-// Common get all function
-app.get('/api/getAll/:fileName',readFileMiddleware,(req,res)=>{
-    let {start, end} = req.body
-    if(start && end){
-        let pagination = res.locals.result.slice(Number(req.body.start),Number(req.body.end))
-        res.status(200).send(pagination)
-    }
-    else{
-        res.status(200).json(res.locals.result)
-    }
-})
-
-
-
-app.get('/api/user/:userId',async(req,res)=>{
-    let users = await readJSONFile('users')
-    const obj = users.find((el)=>el.id === Number(req.params.userId))   
-    res.status(200).json(obj)
-})
-
-//Create an Article
-app.post('/api/:fileName',readFileMiddleware, middlewareArticleWrapper("articles"),writeIntoFile,(req, res) => {
-    res.send("created article successfuly")
-  })
-
-
-app.post('/api/users', readFileMiddleware,middlewareWrapper("users"),writeIntoFile,(req, res) => {
-    res.send("created user successfuly")
-})
-
-//create comment
-app.put('/api/:fileName/:articleId/comment',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(200).json(res.locals.result)
-})
-// update comments
-app.put('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,addCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(200).json(res.locals.result)
-})
-
-
-
-app.delete('/api/:fileName/:articleId/comments/:commentId',readFileMiddleware,deleteCommentMiddleware,writeIntoFile,(req, res) => {
-    res.status(200).json(res.locals.result)
-})
 
 
 app.listen(5000,()=>{
